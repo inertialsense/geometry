@@ -1,1 +1,1 @@
-[![Build Status](https://travis-ci.com/superjax/geometry.svg?branch=master)](https://travis-ci.com/superjax/geometry)
+[![Build Status](https://travis-ci.com/inertialsense/geometry.svg?branch=master)](https://travis-ci.com/inertialsense/geometry)
