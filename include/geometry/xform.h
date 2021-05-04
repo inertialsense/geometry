@@ -112,12 +112,16 @@ public:
 
   Xform operator* (const Xform& X) const
   {
+    // Given transforms A and B, C = A * B is a composition of A and B
+    // i.e. transform A followed by B
       return otimes(X);
   }
 
   Xform& operator*= (const Xform& X)
   {
-    t_ = t_ + q_.rotp(X.t_);
+    // Given transforms A and B, A *= B is the same as A = A * B
+    // i.e. transform A followed by B
+    t_ = t_ + q_.rota(X.t_);
     q_ = q_ * X.q_;
     return *this;
   }
@@ -171,8 +175,9 @@ public:
 
   Mat4 Mat() const
   {
+    // Homogeneous matrix that transforms from body ro reference frame
     Mat4 out;
-    out.block<3,3>(0,0) = q_.R();
+    out.block<3,3>(0,0) = q_.R().transpose();
     out.block<3,1>(0,3) = t_;
     out.block<1,3>(3,0) = Eigen::Matrix<T,1,3>::Zero();
     out(3,3) = 1.0;
@@ -253,6 +258,10 @@ public:
   template <typename Tout=T, typename T2>
   Xform<Tout> otimes(const Xform<T2>& X2) const
   {
+    // Note: if transform A is translation ta and rotation qa
+    // and transform B is translation tb and rotation qb
+    // then transform C = (A otimes B) is given by
+    // tc = ta + qa.rota(tb) and qc = qa * qb (quaternion multiplication)
     Xform<Tout> X;
     Eigen::Matrix<Tout,3,1> t = (Tout)2.0*X2.t_.cross(q_.bar());
     X.t_ = t_+ X2.t_ - q_.w()* t + t.cross(q_.bar());
